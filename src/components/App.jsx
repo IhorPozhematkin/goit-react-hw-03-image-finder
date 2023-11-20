@@ -15,15 +15,13 @@ export class App extends Component {
     error: '',
     currentItem: null,
     isLoading: false,
-    isModalOpen: false,
     isLoadMore: false,
-    isSearchDisabled: false,
   };
 
   componentDidUpdate(_, prevState) {
     const { page, request } = this.state;
     if (page !== prevState.page || request !== prevState.request) {
-      this.setState({ isLoading: true, isSearchDisabled: true });
+      this.setState({ isLoading: true });
       serviceSearch(request, page)
         .then(({ hits, totalHits }) => {
           if (!hits.length) {
@@ -43,9 +41,7 @@ export class App extends Component {
             error: 'Please try again.',
           })
         )
-        .finally(() =>
-          this.setState({ isLoading: false, isSearchDisabled: false })
-        );
+        .finally(() => this.setState({ isLoading: false }));
     }
   }
 
@@ -72,30 +68,19 @@ export class App extends Component {
   openModalHandler = e => {
     const imageId = Number(e.target.id);
     const currentItem = this.state.images.find(({ id }) => id === imageId);
-    this.setState({ currentItem: currentItem, isModalOpen: true });
+    this.setState({ currentItem: currentItem });
   };
 
   closeModalHandler = () => {
-    this.setState({ currentItem: null, isModalOpen: false });
+    this.setState({ currentItem: null });
   };
 
   render() {
-    const {
-      images,
-      isModalOpen,
-      isLoadMore,
-      isLoading,
-      isSearchDisabled,
-      currentItem,
-      error,
-    } = this.state;
+    const { images, isLoadMore, isLoading, currentItem, error } = this.state;
 
     return (
       <Wrapper>
-        <Searchbar
-          searchHandler={this.searchHandler}
-          isSearchDisabled={isSearchDisabled}
-        />
+        <Searchbar searchHandler={this.searchHandler} />
         {error === '' ? (
           <ImageGallery
             items={images}
@@ -106,7 +91,7 @@ export class App extends Component {
         )}
         {isLoading && <Loader />}
         {isLoadMore && <Button onClick={this.loadMoreHandler} />}
-        {isModalOpen && (
+        {currentItem && (
           <Modal item={currentItem} closeModal={this.closeModalHandler} />
         )}
       </Wrapper>
