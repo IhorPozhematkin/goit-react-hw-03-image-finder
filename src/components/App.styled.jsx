@@ -6,3 +6,8 @@ export const Wrapper = styled.div`
   grid-gap: 16px;
   padding-bottom: 24px;
 `;
+
+export const Error = styled.p`
+  margin: 0 auto;
+  font-size: 20px;
+`;
